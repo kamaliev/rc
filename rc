@@ -31,9 +31,10 @@ if [[ -z "$1" || -z "$2" || -z "$3" ]]
 fi
 
 DATE=$(date +"%Y%m%d")
-FIND=`find $2 -name "$3"`
+FIND=`find $2 -type f -regex ".*/$3"`
 for FILE in $FIND
 do
+	echo $FILE
 	echo -e $1 " " $FILE " " $FILE.$DATE.bak >> rc.replacement.$DATE.txt
 	cp $FILE $FILE.$DATE.bak
 	cp $1 $FILE
