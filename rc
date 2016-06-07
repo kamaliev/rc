@@ -1,0 +1,40 @@
+#!/bin/bash
+
+if [[ $1 == "-r" ]]
+	then
+	if [[ -z "$2" ]]
+		then
+		echo -e "\n\t\033[1mUsing:\t\t\033[0m ./rc -r [\033[4mbackup list\033[0m]"
+		echo -e "\t\033[1mExmaple:\t\033[0m ./rc -r rc.replacement.20160607.txt"
+		echo -e "\n"	
+	else		
+		cat "$2" | while read LINE
+		do
+			IFS=', ' read -r -a array <<< "$LINE"	
+			cp ${array[2]} ${array[1]}
+			rm ${array[2]}		
+		done
+	fi	
+	exit
+fi
+
+if [[ -z "$1" || -z "$2" || -z "$3" ]]
+	then 
+	echo -e "\n\tThis script copies the contents of the [\033[4msource file\033[0m] in the file \n\tthat matches the [\033[4mregexp pattern\033[0m] in the directory [\033[4mpath\033[0m] and its subdirectories"	
+	echo -e "\t-r: Restore content from a backup file , use the directive"
+	echo -e "\n\t\033[1mUsing:\t\033[0m \t ./rc [\033[4msource file\033[0m] [\033[4mpath\033[0m] [\033[4mregexp pattern\033[0m]"
+	echo -e "\t\033[1mExmaple:\t\033[0m ./rc source.js /var/www/sites 'jquery.[0-9].*.js'"
+	echo -e "\n\t\033[1mUsing:\t\t\033[0m ./rc -r [\033[4mbackup list\033[0m]"
+	echo -e "\t\033[1mExmaple:\t\033[0m ./rc -r rc.replacement.20160607.txt"
+	echo -e "\n"		
+	exit
+fi
+
+DATE=$(date +"%Y%m%d")
+FIND=`find $2 -name "$3"`
+for FILE in $FIND
+do
+	echo -e $1 " " $FILE " " $FILE.$DATE.bak >> rc.replacement.$DATE.txt
+	cp $FILE $FILE.$DATE.bak
+	cp $1 $FILE
+done
